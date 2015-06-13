@@ -27,6 +27,7 @@ brew install bash-completion
 
 if [ -f `brew --prefix`/etc/bash_completion ]; then
 . `brew --prefix`/etc/bash_completion
+. /usr/local/Cellar/bash-completion/1.3/etc/bash_completion.d/meteor
 fi
 
 ...
