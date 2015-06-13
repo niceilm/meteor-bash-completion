@@ -1,0 +1,308 @@
+# Copyright (c) 2014 stef.kariotidis@gmail.com
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+# INFO:
+# this bash completion file invoked from the command line as meteor,
+# autocompletes meteor commands and is used in the following form:
+# meteor [TAB]
+# meteor command [TAB]
+#
+# ATTENTION
+# Some completions are for options that must be placed at the end of the command
+# for example the build command:
+# Usage: meteor build &lt;output path&gt; [--debug] [--directory] [--settings settings.json]
+#
+# INSTALLATION:
+# See README.md
+#
+# VERSION:
+# For Meteor 1.1.0.2
+
+#run                 [default] Run this project in local development mode.
+#debug               Run the project, but suspend the server process for debugging.
+#create              Create a new project.
+#update              Upgrade this project's dependencies to their latest versions.
+#add                 Add a package to this project.
+#remove              Remove a package from this project.
+#list                List the packages explicitly used by your project.
+#add-platform        Add a platform to this project.
+#install-sdk         Installs SDKs for a platform.
+#remove-platform     Remove a platform from this project.
+#list-platforms      List the platforms added to your project.
+#configure-android   Run the Android configuration tool from Meteor's ADK environment.
+#build               Build this project for all platforms.
+#shell               Launch a Node REPL for interactively evaluating server-side code.
+#mongo               Connect to the Mongo database for the specified site.
+#reset               Reset the project state. Erases the local database.
+#deploy              Deploy this project to Meteor.
+#logs                Show logs for specified site.
+#authorized          View or change authorized users and organizations for a site.
+#claim               Claim a site deployed with an old Meteor version.
+#login               Log in to your Meteor developer account.
+#logout              Log out of your Meteor developer account.
+#whoami              Prints the username of your Meteor developer account.
+#test-packages       Test one or more packages.
+#admin               Administrative commands.
+#list-sites          List sites for which you are authorized.
+#publish-release     Publish a new meteor release to the package server.
+#publish             Publish a new version of a package to the package server.
+#publish-for-arch    Builds an already-published package for a new platform.
+#search              Search through the package server database.
+#show                Show detailed information about a release or package.
+_meteor()
+{
+    local cur prev opts base
+    COMPREPLY=() # completion reply array
+    cur="${COMP_WORDS[COMP_CWORD]}" # current word
+    prev="${COMP_WORDS[COMP_CWORD-1]}" # previous word
+
+    # basic meteor commands
+    commands="help run create update add remove list add-platform install-sdk remove-platform
+            list-platforms configure-android build shell mongo reset deploy logs
+            authorized claim login logout whoami test-packages admin list-sites
+            publish-release publish publish-for-arch search show"
+    # help contents
+    help_lookup="run create update add remove list add-platform install-sdk remove-platform
+            list-platforms configure-android build shell mongo reset deploy logs
+            authorized claim login logout whoami test-packages admin list-sites
+            publish-release publish publish-for-arch search show"
+
+    case "${prev}" in
+        help )
+            args=$(for word in $help_lookup;do echo "$word";done)
+            COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+            return 0
+            ;;
+        run )
+          local options=" \
+            ios \
+            android \
+            --port -p \
+            --debug-port \
+            --mobile-server \
+            --production \
+            --raw-logs \
+            --settings \
+            --release \
+            --verbose \
+            --allow-incompatible-update \
+            --test"
+
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        create )
+            local options=" \
+            --release \
+            --list \
+            --example \
+            --package"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        update )
+            local options=" \
+            --packages-only \
+            --patch \
+            --release \
+            --allow-incompatible-update"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        add )
+#           too slow
+#           local options=$(meteor search "${cur}" | sed -e 's/ .*$//g')
+            local options=" \
+            --allow-incompatible-update"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        remove )
+            if [[ -r .meteor/packages ]]
+            then
+              options=$( grep -v '^#' .meteor/packages | sed -e 's/@.*$//g' )
+            fi
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        list )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        add-platform )
+            local options=" \
+            server \
+            browser \
+            android \
+            ios"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        install-sdk )
+            local options=" \
+            android \
+            ios"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        remove-platform )
+            options=$( meteor list-platforms )
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        list-platforms )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        configure-android )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        build )
+            local options=" \
+            --debug \
+            --directory \
+            --mobile-settings \
+            --server \
+            --architecture \
+            --allow-incompatible-update"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        shell )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        mongo )
+            COMPREPLY=( $(compgen -W "--url -U" -- "${cur}") )
+            return 0
+            ;;
+        reset )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        deploy )
+            local options=" \
+            --delete -D \
+            --debug \
+            --settings \
+            --allow-incompatible-update"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        logs )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        authorized )
+            local options=" \
+            --list \
+            --add \
+            --remove"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        claim )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        login )
+            COMPREPLY=( $(compgen -W "--email" -- "${cur}") )
+            return 0
+            ;;
+        logout )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        whoami )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        test-packages )
+            local options=" \
+            --port -p \
+            --debug-port \
+            --mobile-server \
+            --deploy \
+            --production \
+            --settings \
+            --ios \
+            --android \
+            --ios-device \
+            --android-device \
+            --test-app-path \
+            --velocity \
+            --verbose"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        admin )
+            local commands=" \
+                maintainers \
+                recommend-release \
+                change-homepage \
+                list-organizations \
+                members \
+                get-machine"
+            COMPREPLY=( $(compgen -W "${commands}" -- "${cur}") )
+            return 0
+            ;;
+        list-sites )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        publish-release )
+            COMPREPLY=( $(compgen -W "--create-track" -- "${cur}") )
+            return 0
+            ;;
+        publish )
+            local options=" \
+                --create \
+                --update \
+                --allow-incompatible-update"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        publish-for-arch )
+            COMPREPLY=( $(compgen -W "" -- "${cur}") )
+            return 0
+            ;;
+        search )
+            local options=" \
+            --maintainer \
+            --show-old \
+            --ejson"
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+        show )
+            local options=" \
+            --ejson \
+            --show-all"
+             COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=($(compgen -W "${commands}" -- "${cur}"))
+    return 0
+}
+
+complete -F _meteor meteor
