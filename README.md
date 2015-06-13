@@ -1,5 +1,5 @@
 # Meteor Bash Completion
-Bash shell completions for the Meteor command-line utility.
+[Bash shell completions](https://bash-completion.alioth.debian.org/) for the [Meteor](https://www.meteor.com/) command-line utility.
 
 Installing this script makes it possible to use the Tab key to fill in possible completions.
 
